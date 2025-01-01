@@ -19,7 +19,7 @@ $ python3 tetris_game.py
 If you want play by yourself, you should uncomment this line in `tetris_game.py`:
 
 ```python
-# TETRIS_AI = None
+TETRIS_AI = None
 ```
 
 Or just comment this line:
@@ -35,7 +35,7 @@ class Tetris(QMainWindow):
     ...
     def initUI(self):
         ...
-        self.speed = 10
+        self.speed = 1
 ```
 
 ### Play rules
