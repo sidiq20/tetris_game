@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe17d0ba-71f7-45fa-bd07-e00bdf2f2691" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tetris_game" beforeDir="false" afterPath="$PROJECT_DIR$/tetris_game" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tetris_game/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/tetris_game/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tetris_game/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/tetris_game/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tetris_game/tetris_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/tetris_game/tetris_game.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/leaderboard.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user_profile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tetris_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/tetris_game.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +16,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/tetris_game" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -45,9 +44,9 @@
     "Python.tetris_game.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "sidiq",
     "ignore.virus.scanning.warn.message": "true",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   }
 }]]></component>
   <component name="SharedIndexes">

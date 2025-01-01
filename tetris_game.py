@@ -5,6 +5,7 @@ from PyQt5.QtGui import QPainter, QColor, QFont
 
 from tetris_model import BOARD_DATA, Shape
 from tetris_ai import TETRIS_AI
+from leaderboard import Leaderboard
 
 TETRIS_AI = None
 
@@ -19,9 +20,17 @@ class Tetris(QMainWindow):
 
         self.initUI()
 
+    def setDifficulty(self, level):
+        if level == "Easy":
+            self.speed = 300
+        elif level == "Medium":
+            self.speed = 200
+        elif level == "Hard":
+            self.speed = 100
+
     def initUI(self):
-        self.gridSize = 30
-        self.speed = 250
+        self.gridSize = 40
+        self.speed = 200
 
         self.timer = QBasicTimer()
         self.setFocusPolicy(Qt.StrongFocus)
@@ -44,6 +53,9 @@ class Tetris(QMainWindow):
 
         self.setFixedSize(self.tboard.width() + self.sidePanel.width(),
                           self.sidePanel.height() + self.statusbar.height())
+
+        difficulty = input("Select difficulty (Easy/Medium/Hard): ")
+        self.setDifficulty(difficulty)
 
     def center(self):
         screen = QDesktopWidget().screenGeometry()
@@ -84,6 +96,15 @@ class Tetris(QMainWindow):
         self.update()
 
     def timerEvent(self, event):
+        def adjustSpeed(self):
+            if self.tboard.score >= 50:
+                self.speed = 180
+            elif self.tboard.score >= 100:
+                self.speed = 150
+            elif self.tboard.score >= 200:
+                self.speed = 100
+            self.timer.start(self.speed, self)
+
         if event.timerId() == self.timer.timerId():
             if self.isGameOver:
                 self.timer.stop()
@@ -116,6 +137,8 @@ class Tetris(QMainWindow):
             self.updateWindow()
         else:
             super(Tetris, self).timerEvent(event)
+
+        self.adjustSpeed()
 
     def keyPressEvent(self, event):
         if self.isGameOver:
@@ -190,7 +213,7 @@ class SidePanel(QFrame):
 
 class Board(QFrame):
     msg2Statusbar = pyqtSignal(str)
-    speed = 10
+    speed = 12
 
     def __init__(self, parent, gridSize):
         super().__init__(parent)
@@ -234,6 +257,13 @@ class Board(QFrame):
         painter.setPen(QColor(255, 0, 0))
         painter.setFont(QFont('Arial', 20, QFont.Bold))
         painter.drawText(self.rect(), Qt.AlignCenter, "Game Over!")
+
+        name = input("Enter your name: ")
+        Leaderboard.add_score(name, self.tboard.score)
+        scores = Leaderboard.load()
+        print("Leaderboard:")
+        for i, entry in enumerate(scores, 1):
+            print(f"{i}. {entry['name']} - {entry['score']}")
 
     def updateData(self):
         self.msg2Statusbar.emit(str(self.score))
