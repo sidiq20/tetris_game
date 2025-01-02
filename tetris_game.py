@@ -6,8 +6,10 @@ from PyQt5.QtGui import QPainter, QColor, QFont
 from tetris_model import BOARD_DATA, Shape
 from tetris_ai import TETRIS_AI
 from leaderboard import Leaderboard
+from user_profile import UserProfile
 
-TETRIS_AI = None
+# TETRIS_AI = None
+
 
 class Tetris(QMainWindow):
     def __init__(self):
@@ -21,14 +23,14 @@ class Tetris(QMainWindow):
         self.initUI()
 
     def setDifficulty(self, level):
-        if level == "Easy":
-            self.speed = 300
-        elif level == "Medium":
-            self.speed = 200
-        elif level == "Hard":
-            self.speed = 100
+        levels = {"Easy": 300, "Medium": 200, "Hard": 100}
+        self.speed = levels.get(level, 200)
 
     def initUI(self):
+        self.player_name = input("Enter your name: ")
+        profile = UserProfile.get_profile(self.player_name)
+        print(f"Welcome {self.player_name}! Your high score: {profile['high_score']}")
+
         self.gridSize = 40
         self.speed = 200
 
@@ -45,17 +47,16 @@ class Tetris(QMainWindow):
         self.statusbar = self.statusBar()
         self.tboard.msg2Statusbar[str].connect(self.statusbar.showMessage)
 
-        self.start()
+        difficulty = input("Select difficulty (Easy/Medium/Hard): ")
+        self.setDifficulty(difficulty)
 
+        self.start()
         self.center()
         self.setWindowTitle('Tetris')
         self.show()
 
         self.setFixedSize(self.tboard.width() + self.sidePanel.width(),
                           self.sidePanel.height() + self.statusbar.height())
-
-        difficulty = input("Select difficulty (Easy/Medium/Hard): ")
-        self.setDifficulty(difficulty)
 
     def center(self):
         screen = QDesktopWidget().screenGeometry()
@@ -77,7 +78,7 @@ class Tetris(QMainWindow):
         self.timer.start(self.speed, self)
 
     def pause(self):
-        if not self.isStarted or self.isGameOver: 
+        if not self.isStarted or self.isGameOver:
             return
 
         self.isPaused = not self.isPaused
@@ -95,16 +96,16 @@ class Tetris(QMainWindow):
         self.sidePanel.updateData()
         self.update()
 
-    def timerEvent(self, event):
-        def adjustSpeed(self):
-            if self.tboard.score >= 50:
-                self.speed = 180
-            elif self.tboard.score >= 100:
-                self.speed = 150
-            elif self.tboard.score >= 200:
-                self.speed = 100
-            self.timer.start(self.speed, self)
+    def adjustSpeed(self):
+        if self.tboard.score >= 50:
+            self.speed = 180
+        elif self.tboard.score >= 100:
+            self.speed = 150
+        elif self.tboard.score >= 200:
+            self.speed = 100
+        self.timer.start(self.speed, self)
 
+    def timerEvent(self, event):
         if event.timerId() == self.timer.timerId():
             if self.isGameOver:
                 self.timer.stop()
@@ -135,8 +136,6 @@ class Tetris(QMainWindow):
                 self.nextMove = None
                 self.lastShape = BOARD_DATA.currentShape
             self.updateWindow()
-        else:
-            super(Tetris, self).timerEvent(event)
 
         self.adjustSpeed()
 
@@ -178,6 +177,11 @@ class Tetris(QMainWindow):
         self.timer.stop()
         self.tboard.msg2Statusbar.emit("Game Over! Press R to Restart.")
         self.updateWindow()
+
+        Leaderboard.add_score(self.player_name, self.tboard.score)
+        UserProfile.update_profile(self.player_name, self.tboard.score)
+
+        Leaderboard.print_leaderboard()
 
     def restartGame(self):
         self.isPaused = False
@@ -225,14 +229,6 @@ class Board(QFrame):
         self.score = 0
         BOARD_DATA.clear()
 
-    def gameOver(self):
-        spawn_x, spawn_y = self.width // 2, self.height - 1  
-        for x, y in self.getCurrentShapeCoord(spawn_x, spawn_y):
-            if self.getValue(x, y) != 0: 
-                return True
-        return False    
-
-
     def paintEvent(self, event):
         painter = QPainter(self)
 
@@ -245,11 +241,11 @@ class Board(QFrame):
             val = BOARD_DATA.currentShape.shape
             drawSquare(painter, x * self.gridSize, y * self.gridSize, val, self.gridSize)
 
-        if self.parent().isGameOver: 
+        if self.parent().isGameOver:
             self.drawGameOverMessage(painter)
 
         painter.setPen(QColor(0x777777))
-        painter.drawLine(self.width()-1, 0, self.width()-1, self.height())
+        painter.drawLine(self.width() - 1, 0, self.width() - 1, self.height())
         painter.setPen(QColor(0xCCCCCC))
         painter.drawLine(self.width(), 0, self.width(), self.height())
 
@@ -257,13 +253,6 @@ class Board(QFrame):
         painter.setPen(QColor(255, 0, 0))
         painter.setFont(QFont('Arial', 20, QFont.Bold))
         painter.drawText(self.rect(), Qt.AlignCenter, "Game Over!")
-
-        name = input("Enter your name: ")
-        Leaderboard.add_score(name, self.tboard.score)
-        scores = Leaderboard.load()
-        print("Leaderboard:")
-        for i, entry in enumerate(scores, 1):
-            print(f"{i}. {entry['name']} - {entry['score']}")
 
     def updateData(self):
         self.msg2Statusbar.emit(str(self.score))

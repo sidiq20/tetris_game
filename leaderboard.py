@@ -22,3 +22,10 @@ class Leaderboard:
         data.append({"name": name, "score": score})
         data = sorted(data, key=lambda x: x["score"], reverse=True)[:10]
         Leaderboard.save(data)
+
+    @staticmethod
+    def print_leaderboard():
+        scores = Leaderboard.load()
+        print("Leaderboard:")
+        for i, entry in enumerate(scores, 1):
+            print(f"{i}. {entry['name']} - {entry['score']}")
